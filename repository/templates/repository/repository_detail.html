@@ -5,19 +5,31 @@
 {% block extra_css %}
 <style>
     .repo-header {
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background-color: rgba(17, 24, 39, 0.6);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         padding: 20px;
         margin-bottom: 24px;
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .repo-header:hover {
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2), 0 5px 15px rgba(0, 0, 0, 0.3);
+        background-color: rgba(17, 24, 39, 0.7);
+        border-color: rgba(59, 130, 246, 0.3);
     }
     
     .file-row {
-        transition: background-color 0.2s ease;
+        transition: all 0.3s ease;
+        border-color: rgba(59, 130, 246, 0.1) !important;
     }
     
     .file-row:hover {
-        background-color: #f0f7ff;
+        background-color: rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px);
     }
     
     .file-icon {
@@ -28,35 +40,138 @@
         align-items: center;
         justify-content: center;
         margin-right: 12px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.2));
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .file-row:hover .file-icon {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(29, 78, 216, 0.3));
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        transform: scale(1.05);
     }
     
     .stats-card {
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.1);
         height: 100%;
-        transition: transform 0.3s;
+        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        background: rgba(17, 24, 39, 0.6) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
     
     .stats-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+        box-shadow: 
+            0 15px 35px rgba(59, 130, 246, 0.2),
+            0 5px 15px rgba(0, 0, 0, 0.2),
+            0 0 20px rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .stats-card .card-title {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .stats-card:hover .card-title {
+        color: white;
+    }
+    
+    .icon-bg {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        margin-right: 16px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.2));
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover .icon-bg {
+        transform: scale(1.1);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(29, 78, 216, 0.3));
     }
     
     .breadcrumb-item a {
         color: var(--bs-primary);
         text-decoration: none;
+        transition: all 0.3s ease;
     }
     
     .breadcrumb-item a:hover {
-        text-decoration: underline;
+        color: #60a5fa;
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
     }
     
     .breadcrumb-item.active {
-        color: #6c757d;
+        color: rgba(255, 255, 255, 0.7);
     }
     
     .empty-state {
         padding: 40px 0;
+        background: rgba(17, 24, 39, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .empty-state:hover {
+        background: rgba(17, 24, 39, 0.7);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2), 0 5px 15px rgba(0, 0, 0, 0.3);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .table {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .table thead th {
+        border-color: rgba(59, 130, 246, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+    }
+    
+    .table-striped>tbody>tr:nth-of-type(odd) {
+        background-color: rgba(17, 24, 39, 0.3);
+    }
+    
+    .offcanvas {
+        background-color: rgba(17, 24, 39, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-left: 1px solid rgba(59, 130, 246, 0.1);
+    }
+    
+    .offcanvas-header {
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    }
+    
+    .offcanvas-title {
+        color: white;
+    }
+    
+    .offcanvas-body h6 {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .offcanvas-body p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .table-responsive {
+        background: rgba(17, 24, 39, 0.5);
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        padding: 1px;
     }
 </style>
 {% endblock %}
@@ -76,12 +191,12 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                    <div class="icon-bg">
                         <i class="bi bi-folder2-open fs-3 text-primary"></i>
                     </div>
                     <div>
-                        <h1 class="h3 fw-bold mb-1">{{ repository.name }}</h1>
-                        <p class="text-muted mb-0">{{ repository.description|default:"暂无描述" }}</p>
+                        <h1 class="h3 fw-bold mb-1 text-white">{{ repository.name }}</h1>
+                        <p class="text-white-50 mb-0">{{ repository.description|default:"暂无描述" }}</p>
                     </div>
                 </div>
             </div>
@@ -99,10 +214,10 @@
     <!-- 仓库统计信息 -->
     <div class="row g-3 mb-4">
         <div class="col-md-3">
-            <div class="stats-card card bg-primary bg-opacity-10 text-primary">
+            <div class="stats-card card text-primary">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="rounded p-2 bg-white me-3">
+                        <div class="icon-bg">
                             <i class="bi bi-file-earmark-code fs-4"></i>
                         </div>
                         <div>
@@ -114,10 +229,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card card bg-success bg-opacity-10 text-success">
+            <div class="stats-card card text-success">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="rounded p-2 bg-white me-3">
+                        <div class="icon-bg">
                             <i class="bi bi-clock-history fs-4"></i>
                         </div>
                         <div>
@@ -129,10 +244,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card card bg-info bg-opacity-10 text-info">
+            <div class="stats-card card text-info">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="rounded p-2 bg-white me-3">
+                        <div class="icon-bg">
                             <i class="bi bi-calendar-date fs-4"></i>
                         </div>
                         <div>
@@ -144,10 +259,10 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card card bg-secondary bg-opacity-10 text-secondary">
+            <div class="stats-card card text-secondary">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <div class="rounded p-2 bg-white me-3">
+                        <div class="icon-bg">
                             <i class="bi bi-person fs-4"></i>
                         </div>
                         <div>
@@ -159,57 +274,48 @@
             </div>
         </div>
     </div>
-
+    
     <!-- 文件列表 -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white py-3">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-files me-2 text-primary"></i>文件列表</h5>
-                <div class="d-flex">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="搜索文件..." id="fileSearch">
-                        <button class="btn btn-outline-primary" type="button">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <div class="card shadow-sm mb-4" style="background: rgba(17, 24, 39, 0.6); border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.1);">
+        <div class="card-header d-flex justify-content-between align-items-center" style="background: transparent; border-bottom: 1px solid rgba(59, 130, 246, 0.1);">
+            <h5 class="card-title mb-0 text-white">文件列表</h5>
+            <a href="{% url 'upload_file' repository_id=repository.id %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> 添加文件
+            </a>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body">
             {% if files %}
             <div class="table-responsive">
-                <table class="table table-hover mb-0" id="fileTable">
-                    <thead class="table-light">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-                            <th class="ps-4">文件路径</th>
-                            <th>最新版本</th>
-                            <th>更新时间</th>
-                            <th class="text-end pe-4">操作</th>
+                            <th style="width: 50%;">文件名</th>
+                            <th>上传时间</th>
+                            <th>最后更新</th>
+                            <th>版本数</th>
+                            <th class="text-end">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for file in files %}
                         {% with latest_version=file.get_latest_version %}
                         <tr class="file-row">
-                            <td class="ps-4">
+                            <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="file-icon bg-primary bg-opacity-10">
-                                        <i class="bi bi-file-earmark-code text-primary fs-5"></i>
+                                    <div class="file-icon">
+                                        <i class="bi bi-file-earmark-code text-primary"></i>
                                     </div>
                                     <div>
-                                        <a href="{% url 'file_detail' repository_id=repository.id file_id=file.id %}" class="text-decoration-none text-dark fw-medium">
+                                        <a href="{% url 'file_detail' repository_id=repository.id file_id=file.id %}" class="text-decoration-none text-white">
                                             {{ file.file_path }}
                                         </a>
-                                        <div class="small text-muted">{{ latest_version.commit_message|default:""|truncatechars:40 }}</div>
+                                        <div class="small text-white-50">{{ file.get_file_extension }} 文件</div>
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary py-2 px-3">
-                                    v{{ latest_version.version_number|default:"--" }}
-                                </span>
-                            </td>
-                            <td>{{ file.updated_at|date:"Y-m-d H:i" }}</td>
+                            <td>{{ file.created_at|date:"Y-m-d" }}</td>
+                            <td>{{ file.updated_at|date:"Y-m-d" }}</td>
+                            <td>{{ file.versions.count }}</td>
                             <td class="text-end pe-4">
                                 <div class="btn-group" role="group">
                                     <a href="{% url 'file_detail' repository_id=repository.id file_id=file.id %}" class="btn btn-sm btn-outline-primary">
@@ -234,8 +340,8 @@
             {% else %}
             <div class="empty-state text-center">
                 <i class="bi bi-file-earmark-x text-primary" style="font-size: 4rem; opacity: 0.7;"></i>
-                <h3 class="mt-4 fw-bold">该仓库还没有任何文件</h3>
-                <p class="text-muted mb-4">上传您的第一个代码文件来开始使用</p>
+                <h3 class="mt-4 fw-bold text-white">该仓库还没有任何文件</h3>
+                <p class="text-white-50 mb-4">上传您的第一个代码文件来开始使用</p>
                 <a href="{% url 'upload_file' repository_id=repository.id %}" class="btn btn-primary">
                     <i class="bi bi-upload me-2"></i> 上传第一个文件
                 </a>
@@ -251,7 +357,7 @@
         <h5 class="offcanvas-title" id="repoInfoOffcanvasLabel">
             <i class="bi bi-info-circle me-2 text-primary"></i>仓库详细信息
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
         <div class="mb-4">
@@ -295,45 +401,95 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
 <script>
-    // 文件搜索功能
     document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('fileSearch');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', function() {
-                const filter = searchInput.value.toUpperCase();
-                const table = document.getElementById('fileTable');
-                if (table) {
-                    const tr = table.getElementsByTagName('tr');
-                    
-                    for (let i = 1; i < tr.length; i++) {
-                        const td = tr[i].getElementsByTagName('td')[0];
-                        if (td) {
-                            const txtValue = td.textContent || td.innerText;
-                            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                                tr[i].style.display = '';
-                            } else {
-                                tr[i].style.display = 'none';
-                            }
-                        }
-                    }
+        // 卡片3D悬停效果
+        const cards = document.querySelectorAll('.stats-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // 计算旋转角度
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                // 应用旋转和阴影效果
+                gsap.to(this, {
+                    duration: 0.5,
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    boxShadow: `
+                        ${(x - centerX) / 15}px ${(y - centerY) / 15}px 30px rgba(59, 130, 246, 0.3),
+                        0 10px 20px rgba(0, 0, 0, 0.2)
+                    `,
+                    ease: 'power2.out'
+                });
+                
+                // 为图标添加跟随效果
+                const icon = this.querySelector('.icon-bg');
+                if (icon) {
+                    gsap.to(icon, {
+                        duration: 0.5,
+                        x: (x - centerX) / 15,
+                        y: (y - centerY) / 15,
+                        ease: 'power2.out'
+                    });
                 }
             });
-        }
+            
+            // 鼠标离开时恢复原状
+            card.addEventListener('mouseleave', function() {
+                gsap.to(this, {
+                    duration: 0.7,
+                    rotateX: 0,
+                    rotateY: 0,
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+                    ease: 'elastic.out(1, 0.5)'
+                });
+                
+                // 图标恢复原位
+                const icon = this.querySelector('.icon-bg');
+                if (icon) {
+                    gsap.to(icon, {
+                        duration: 0.7,
+                        x: 0,
+                        y: 0,
+                        ease: 'elastic.out(1, 0.5)'
+                    });
+                }
+            });
+        });
         
-        // 给文件行添加点击事件
+        // 文件行悬停动画
         const fileRows = document.querySelectorAll('.file-row');
         fileRows.forEach(row => {
-            const link = row.querySelector('a');
-            if (link) {
-                row.style.cursor = 'pointer';
-                row.addEventListener('click', function(e) {
-                    // 如果点击的不是操作按钮，就导航到文件详情页
-                    if (!e.target.closest('.btn-group')) {
-                        window.location.href = link.href;
-                    }
-                });
-            }
+            row.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.file-icon i');
+                if (icon) {
+                    gsap.to(icon, {
+                        duration: 0.3,
+                        scale: 1.2,
+                        ease: 'back.out(1.7)'
+                    });
+                }
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.file-icon i');
+                if (icon) {
+                    gsap.to(icon, {
+                        duration: 0.3,
+                        scale: 1,
+                        ease: 'power2.out'
+                    });
+                }
+            });
         });
     });
 </script>

@@ -211,7 +211,7 @@
     
     /* 特性卡片 */
     .feature-card {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(17, 24, 39, 0.6);
         border-radius: 20px;
         overflow: hidden;
         padding: 20px;
@@ -220,7 +220,7 @@
         transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.1);
         transform-style: preserve-3d;
         perspective: 1000px;
     }
@@ -228,12 +228,12 @@
     .feature-card:hover {
         transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
         box-shadow: 
-            0 15px 35px rgba(59, 130, 246, 0.2),
+            0 15px 35px rgba(59, 130, 246, 0.3),
             0 5px 15px rgba(0, 0, 0, 0.3),
-            0 0 20px rgba(59, 130, 246, 0.4),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(59, 130, 246, 0.3);
+            0 0 30px rgba(59, 130, 246, 0.5),
+            inset 0 0 0 1px rgba(59, 130, 246, 0.2);
+        background: rgba(17, 24, 39, 0.8);
+        border-color: rgba(59, 130, 246, 0.4);
     }
     
     .feature-card::before {
@@ -244,9 +244,9 @@
         width: 100%;
         height: 100%;
         background: linear-gradient(45deg, 
-            rgba(255, 255, 255, 0) 0%, 
-            rgba(255, 255, 255, 0.05) 50%, 
-            rgba(255, 255, 255, 0) 100%);
+            rgba(59, 130, 246, 0) 0%, 
+            rgba(59, 130, 246, 0.1) 50%, 
+            rgba(59, 130, 246, 0) 100%);
         opacity: 0;
         transition: opacity 0.5s ease;
         z-index: -1;
@@ -301,12 +301,15 @@
         margin: 0 auto 20px;
         box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         transition: all 0.5s ease;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.2));
+        border: 1px solid rgba(59, 130, 246, 0.2);
     }
     
     .feature-card:hover .icon-circle {
         transform: scale(1.1) translateY(-5px);
-        background: rgba(59, 130, 246, 0.3);
-        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(29, 78, 216, 0.3));
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+        border-color: rgba(59, 130, 246, 0.4);
     }
     
     .icon-circle i {
@@ -329,21 +332,23 @@
     
     .contact-card {
         border-radius: 20px;
-        background-color: rgba(255, 255, 255, 0.08);
+        background-color: rgba(17, 24, 39, 0.6);
         padding: 30px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.1);
         transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
     
     .contact-card:hover {
         transform: translateY(-5px);
         box-shadow: 
-            0 15px 35px rgba(59, 130, 246, 0.2),
-            0 5px 15px rgba(0, 0, 0, 0.3);
-        border-color: rgba(59, 130, 246, 0.3);
+            0 15px 35px rgba(59, 130, 246, 0.3),
+            0 5px 15px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(59, 130, 246, 0.4);
+        border-color: rgba(59, 130, 246, 0.4);
+        background-color: rgba(17, 24, 39, 0.8);
     }
     
     .contact-card label {
@@ -351,16 +356,17 @@
     }
     
     .contact-card .form-control {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: rgba(26, 32, 44, 0.4);
+        border: 1px solid rgba(59, 130, 246, 0.2);
         color: white;
         transition: all 0.3s ease;
+        border-radius: 10px;
     }
     
     .contact-card .form-control:focus {
-        background-color: rgba(255, 255, 255, 0.08);
-        border-color: rgba(59, 130, 246, 0.5);
-        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        background-color: rgba(26, 32, 44, 0.6);
+        border-color: rgba(59, 130, 246, 0.6);
+        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25), 0 0 15px rgba(59, 130, 246, 0.3);
         transform: translateY(-2px);
     }
     
