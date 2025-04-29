@@ -142,6 +142,14 @@
         background-color: rgba(17, 24, 39, 0.3);
     }
     
+    .table-hover tbody tr:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+    
+    .table tbody tr td {
+        border-color: rgba(59, 130, 246, 0.05);
+    }
+    
     .offcanvas {
         background-color: rgba(17, 24, 39, 0.95);
         backdrop-filter: blur(10px);
@@ -172,6 +180,74 @@
         -webkit-backdrop-filter: blur(5px);
         border: 1px solid rgba(59, 130, 246, 0.1);
         padding: 1px;
+        overflow: hidden;
+    }
+    
+    /* 修复表格背景色 */
+    .table {
+        margin-bottom: 0;
+        background-color: transparent !important;
+    }
+    
+    .table>:not(caption)>*>* {
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+    
+    thead {
+        background-color: rgba(17, 24, 39, 0.6);
+    }
+    
+    thead th {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9) !important;
+        border-bottom: 1px solid rgba(59, 130, 246, 0.1) !important;
+        padding: 16px 12px;
+    }
+    
+    tbody tr:nth-of-type(odd) {
+        background-color: rgba(17, 24, 39, 0.3) !important;
+    }
+    
+    tbody tr:nth-of-type(even) {
+        background-color: rgba(17, 24, 39, 0.4) !important;
+    }
+    
+    tbody tr:hover {
+        background-color: rgba(59, 130, 246, 0.15) !important;
+    }
+    
+    tbody td {
+        border-color: rgba(59, 130, 246, 0.05) !important;
+        padding: 12px;
+        vertical-align: middle;
+    }
+    
+    .btn-outline-primary, .btn-outline-secondary, .btn-outline-success {
+        color: rgba(255, 255, 255, 0.8);
+        border-color: rgba(59, 130, 246, 0.3);
+        background-color: rgba(17, 24, 39, 0.3);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.6);
+        color: white;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: rgba(100, 116, 139, 0.2);
+        border-color: rgba(100, 116, 139, 0.6);
+        color: white;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.6);
+        color: white;
     }
 </style>
 {% endblock %}
