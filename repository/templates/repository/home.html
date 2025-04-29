@@ -3,353 +3,358 @@
 {% block title %}首页 - 代码仓库管理系统{% endblock %}
 
 {% block extra_css %}
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <style>
+    /* 全局样式与变量 */
+    :root {
+        --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        --hover-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* 英雄区域 */
     .hero-section {
-        background: linear-gradient(135deg, #4a8eff 0%, #2563eb 100%);
+        position: relative;
+        background: var(--primary-gradient);
         color: white;
         padding: 80px 0;
-        border-radius: 0 0 20px 20px;
-        margin-bottom: 3rem;
+        margin-bottom: 0;
+        border-radius: 0;
     }
     
     .hero-content {
-        max-width: 800px;
-        margin: 0 auto;
+        position: relative;
+        z-index: 10;
     }
     
-    .feature-card {
-        transition: all 0.3s ease;
-        border-radius: 12px;
+    .hero-background {
+        position: absolute;
+        width: 100%;
         height: 100%;
-        border: none;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+    }
+    
+    .hero-shape {
+        position: absolute;
+        opacity: 0.1;
+        border-radius: 50%;
+    }
+    
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background: #fff;
+        top: -100px;
+        right: -100px;
+    }
+    
+    .shape-2 {
+        width: 200px;
+        height: 200px;
+        background: #fff;
+        bottom: -50px;
+        left: -50px;
+    }
+    
+    /* 标题与文本 */
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
+    
+    .hero-lead {
+        font-size: 1.2rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+    }
+    
+    /* 按钮 */
+    .btn-apple {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-apple:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-3px);
+    }
+    
+    .btn-apple-dark {
+        background: rgba(0, 0, 0, 0.7);
+    }
+    
+    .btn-apple-dark:hover {
+        background: rgba(0, 0, 0, 0.85);
+    }
+    
+    /* 特性卡片 */
+    .feature-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
     .feature-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--hover-shadow);
     }
     
-    .feature-icon {
+    .icon-circle {
         width: 70px;
         height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(59, 130, 246, 0.1);
         border-radius: 50%;
-        margin: 0 auto 1rem;
-        color: var(--bs-primary);
-        font-size: 1.5rem;
-    }
-    
-    .repo-card {
-        transition: all 0.3s ease;
-        border-radius: 12px;
-        overflow: hidden;
-    }
-    
-    .repo-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-    }
-    
-    .repo-icon {
-        width: 60px;
-        height: 60px;
+        background: rgba(59, 130, 246, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
+        margin: 0 auto 20px;
     }
     
-    .section-title {
-        position: relative;
-        margin-bottom: 3rem;
+    .icon-circle i {
+        font-size: 2rem;
+        color: #3b82f6;
+    }
+    
+    /* 联系我们区域 */
+    .contact-section {
+        padding: 60px 0;
+        background-color: #f8fafc;
+    }
+    
+    .contact-card {
+        border-radius: 20px;
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* 行动号召区 */
+    .cta-section {
+        padding: 80px 0;
+        background: var(--primary-gradient);
+        color: white;
         text-align: center;
     }
     
-    .section-title:after {
-        content: '';
-        width: 80px;
-        height: 3px;
-        background-color: var(--bs-primary);
-        position: absolute;
-        bottom: -15px;
-        left: 50%;
-        transform: translateX(-50%);
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
     }
     
-    .search-container {
-        position: relative;
-        margin-bottom: 2rem;
-        max-width: 600px;
+    .cta-subtitle {
+        font-size: 1.2rem;
+        max-width: 800px;
         margin: 0 auto 2rem;
     }
     
-    .search-container .form-control {
-        padding-left: 45px;
-        height: 50px;
-        border-radius: 25px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-    
-    .search-container .bi-search {
-        position: absolute;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--bs-primary);
-    }
-    
-    .search-container .btn {
-        border-radius: 25px;
-        height: 50px;
-        width: 50px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .repo-stats {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-top: 1rem;
-    }
-    
-    .repo-description {
-        min-height: 60px;
-        color: #6c757d;
-    }
-    
-    .btn-hero {
-        padding: 12px 30px;
-        font-weight: 600;
-        border-radius: 50px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease;
-    }
-    
-    .btn-hero:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-lead {
+            font-size: 1rem;
+        }
+        
+        .btn-apple {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- 英雄区域 -->
-<section class="hero-section">
+<section class="hero-section" id="hero">
+    <div class="hero-background">
+        <div class="hero-shape shape-1"></div>
+        <div class="hero-shape shape-2"></div>
+    </div>
     <div class="container">
-        <div class="row align-items-center" data-aos="fade-up">
-            <div class="col-lg-7 hero-content">
-                <h1 class="display-4 fw-bold mb-4">代码仓库管理系统</h1>
-                <p class="lead mb-5">高效管理您的代码、追踪版本变化、简化协作流程。一站式代码管理平台，让开发更轻松。</p>
-                <div class="d-grid gap-3 d-md-flex">
+        <div class="row align-items-center">
+            <div class="col-lg-8 hero-content">
+                <h1 class="hero-title">高效代码管理<br>始于这里</h1>
+                <p class="hero-lead">一站式代码仓库管理平台，让您的开发流程更加流畅。提供先进的代码存储、版本追踪和团队协作功能。</p>
+                <div class="d-flex flex-wrap gap-3">
                     {% if user.is_authenticated %}
-                    <a href="{% url 'repository_list' %}" class="btn btn-light btn-hero">
-                        <i class="bi bi-folder me-2"></i>我的仓库
+                    <a href="{% url 'repository_list' %}" class="btn btn-apple">
+                        <i class="bi bi-folder me-2"></i>探索我的仓库
                     </a>
-                    <a href="{% url 'create_repository' %}" class="btn btn-outline-light btn-hero">
-                        <i class="bi bi-plus-circle me-2"></i>创建仓库
+                    <a href="{% url 'create_repository' %}" class="btn btn-apple btn-apple-dark">
+                        <i class="bi bi-plus-circle me-2"></i>创建新仓库
                     </a>
                     {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-light btn-hero">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>登录
+                    <a href="{% url 'login' %}" class="btn btn-apple">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>立即开始
                     </a>
-                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-hero">
-                        <i class="bi bi-person-plus me-2"></i>注册
+                    <a href="{% url 'register' %}" class="btn btn-apple btn-apple-dark">
+                        <i class="bi bi-person-plus me-2"></i>注册账户
                     </a>
                     {% endif %}
                 </div>
             </div>
-            <div class="col-lg-5 d-none d-lg-block text-center" data-aos="fade-left" data-aos-delay="200">
-                <i class="bi bi-code-square" style="font-size: 10rem; opacity: 0.8;"></i>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+                <i class="bi bi-code-square text-white" style="font-size: 10rem; opacity: 0.3;"></i>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 搜索栏 -->
-{% if user.is_authenticated and repositories %}
-<div class="container">
-    <div class="search-container" data-aos="fade-up">
-        <form class="d-flex" role="search">
-            <i class="bi bi-search"></i>
-            <input class="form-control me-2" type="search" placeholder="搜索仓库名称或描述..." aria-label="Search" id="repo-search">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
-        </form>
-    </div>
-</div>
-{% endif %}
-
-<!-- 仓库列表 -->
-{% if user.is_authenticated and repositories %}
-<section class="py-5">
-    <div class="container">
-        <h2 class="section-title" data-aos="fade-up">最近的仓库</h2>
-        
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for repo in repositories %}
-            <div class="col repo-item" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
-                <div class="card h-100 shadow-sm repo-card">
-                    <div class="card-header d-flex align-items-center bg-white">
-                        <div class="repo-icon rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                            <i class="bi bi-folder2 text-primary fs-4"></i>
-                        </div>
-                        <div>
-                            <h5 class="card-title mb-0">{{ repo.name }}</h5>
-                            <small class="text-muted">
-                                <i class="bi bi-clock"></i> {{ repo.updated_at|date:"Y-m-d H:i" }}
-                            </small>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text repo-description">{{ repo.description|default:"暂无描述"|truncatechars:120 }}</p>
-                        <div class="repo-stats">
-                            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary">
-                                <i class="bi bi-file-earmark-code me-1"></i> {{ repo.files.count }} 文件
-                            </span>
-                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success">
-                                <i class="bi bi-calendar-event me-1"></i> {{ repo.created_at|date:"Y-m-d" }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-white d-flex gap-2">
-                        <a href="{% url 'repository_detail' pk=repo.id %}" class="btn btn-primary flex-grow-1">
-                            <i class="bi bi-eye me-1"></i> 查看
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                <li><a class="dropdown-item" href="{% url 'upload_file' repository_id=repo.id %}">
-                                    <i class="bi bi-upload me-2"></i> 上传文件
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#">
-                                    <i class="bi bi-trash me-2"></i> 删除仓库
-                                </a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div class="text-center mt-4" data-aos="fade-up">
-            <a href="{% url 'repository_list' %}" class="btn btn-outline-primary">
-                <i class="bi bi-folder2-open me-2"></i>查看全部仓库
-            </a>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- 核心功能 -->
+<!-- 主要特性区域 -->
 <section class="py-5 bg-light">
-    <div class="container">
-        <h2 class="section-title" data-aos="fade-up">核心功能</h2>
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">创新技术栈</h2>
+            <p class="lead text-muted mb-0">使用最新的技术，构建高效的代码管理系统</p>
+        </div>
+        
         <div class="row g-4">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card feature-card p-4 h-100">
-                    <div class="feature-icon">
-                        <i class="bi bi-folder-plus"></i>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="icon-circle">
+                        <i class="bi bi-code-square"></i>
                     </div>
-                    <div class="card-body text-center">
-                        <h3 class="card-title h4">仓库管理</h3>
-                        <p class="card-text text-muted">创建和管理您自己的代码仓库，对代码进行分类和整理。支持多种项目类型。</p>
-                    </div>
+                    <h3 class="h4 mb-3">现代化前端</h3>
+                    <p class="text-muted">采用最新的前端技术栈，打造流畅、美观的用户界面</p>
                 </div>
             </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card feature-card p-4 h-100">
-                    <div class="feature-icon">
-                        <i class="bi bi-file-earmark-code"></i>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="icon-circle">
+                        <i class="bi bi-hdd-stack"></i>
                     </div>
-                    <div class="card-body text-center">
-                        <h3 class="card-title h4">代码文件存储</h3>
-                        <p class="card-text text-muted">上传和存储您的代码文件，支持多种编程语言文件。安全可靠的云端存储方案。</p>
-                    </div>
+                    <h3 class="h4 mb-3">强大后端</h3>
+                    <p class="text-muted">基于Django框架构建的可靠后端系统，确保数据安全性和系统稳定性</p>
                 </div>
             </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card feature-card p-4 h-100">
-                    <div class="feature-icon">
-                        <i class="bi bi-clock-history"></i>
+            
+            <div class="col-md-4 mb-4">
+                <div class="feature-card text-center">
+                    <div class="icon-circle">
+                        <i class="bi bi-layers"></i>
                     </div>
-                    <div class="card-body text-center">
-                        <h3 class="card-title h4">版本控制</h3>
-                        <p class="card-text text-muted">对代码文件进行版本控制，随时查看和下载历史版本。清晰追踪代码变更。</p>
-                    </div>
+                    <h3 class="h4 mb-3">全栈集成</h3>
+                    <p class="text-muted">前后端无缝集成，提供一站式代码管理解决方案</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- 平台优势 -->
-<section class="py-5">
+<!-- 联系我们区域 -->
+<section class="contact-section">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6" data-aos="fade-right">
-                <h2 class="mb-4">为什么选择我们？</h2>
-                <p class="lead text-muted mb-4">我们提供简单易用的代码管理平台，帮助您更高效地组织和追踪代码。</p>
-                <ul class="list-unstyled mt-4">
-                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i>简单直观的用户界面</li>
-                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i>安全可靠的数据存储</li>
-                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i>强大的版本追踪功能</li>
-                    <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2"></i>完全免费使用</li>
-                </ul>
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h2 class="fw-bold mb-4">与我们联系</h2>
+                <p class="lead">有任何问题或建议？请随时与我们联系，我们将尽快回复您。</p>
                 <div class="mt-4">
-                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
-                        立即开始使用
-                    </a>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3 bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-envelope-fill text-primary"></i>
+                        </div>
+                        <span>zhengchaowu17@gmail.com</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-telephone-fill text-primary"></i>
+                        </div>
+                        <span>+86 133 3929 4685</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-6 d-none d-lg-block text-center" data-aos="fade-left" data-aos-delay="200">
-                <i class="bi bi-laptop text-primary" style="font-size: 12rem; opacity: 0.7;"></i>
+            <div class="col-lg-6">
+                <div class="contact-card">
+                    <form>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">您的姓名</label>
+                            <input type="text" class="form-control" id="name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">电子邮箱</label>
+                            <input type="email" class="form-control" id="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">您的留言</label>
+                            <textarea class="form-control" id="message" rows="4"></textarea>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                发送消息
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- 行动号召区 -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">准备好开始了吗？</h2>
+        <p class="cta-subtitle">加入我们，体验更高效的代码管理方式</p>
+        <div>
+            {% if user.is_authenticated %}
+            <a href="{% url 'repository_list' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-folder me-2"></i>查看我的仓库
+            </a>
+            {% else %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-person-plus me-2"></i>立即注册
+            </a>
+            {% endif %}
         </div>
     </div>
 </section>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 初始化 AOS 动画库
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true
-        });
+        console.log('页面已完全加载');
         
-        // 搜索功能
-        const searchInput = document.getElementById('repo-search');
-        if(searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const repoItems = document.querySelectorAll('.repo-item');
-                
-                repoItems.forEach(item => {
-                    const title = item.querySelector('.card-title').textContent.toLowerCase();
-                    const description = item.querySelector('.repo-description').textContent.toLowerCase();
-                    
-                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
+        // 隐藏备用内容
+        const contentFallback = document.querySelector('.content-fallback');
+        if (contentFallback) {
+            contentFallback.style.display = 'none';
         }
+        
+        // 添加简单的卡片悬停效果
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+                this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
+            });
+        });
     });
 </script>
 {% endblock %} 
