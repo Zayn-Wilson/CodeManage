@@ -1,0 +1,51 @@
+{% extends 'repository/base.html' %}
+
+{% block title %}创建仓库 - 代码仓库管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">创建新仓库</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p>{{ field.label }}: {{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">仓库名称</label>
+                        {{ form.name.errors }}
+                        <input type="text" name="{{ form.name.name }}" class="form-control {% if form.name.errors %}is-invalid{% endif %}" required id="{{ form.name.id_for_label }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">仓库描述</label>
+                        {{ form.description.errors }}
+                        <textarea name="{{ form.description.name }}" class="form-control {% if form.description.errors %}is-invalid{% endif %}" id="{{ form.description.id_for_label }}" rows="3"></textarea>
+                        <div class="form-text">简要描述这个仓库的用途（可选）</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'repository_list' %}" class="btn btn-outline-secondary">取消</a>
+                        <button type="submit" class="btn btn-primary">创建仓库</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

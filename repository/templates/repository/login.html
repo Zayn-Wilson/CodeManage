@@ -1,0 +1,43 @@
+{% extends 'repository/base.html' %}
+
+{% block title %}登录 - 代码仓库管理系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">登录</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <p>用户名或密码不正确，请重试。</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">用户名</label>
+                        <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" class="form-control" required id="id_username">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">密码</label>
+                        <input type="password" name="password" autocomplete="current-password" class="form-control" required id="id_password">
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">登录</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">还没有账户？<a href="{% url 'register' %}">立即注册</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

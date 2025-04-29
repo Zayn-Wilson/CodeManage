@@ -1,0 +1,340 @@
+{% extends 'repository/base.html' %}
+
+{% block title %}{{ repository.name }} - 代码仓库管理系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .repo-header {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .file-row {
+        transition: background-color 0.2s ease;
+    }
+    
+    .file-row:hover {
+        background-color: #f0f7ff;
+    }
+    
+    .file-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+    }
+    
+    .stats-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        border: none;
+        height: 100%;
+        transition: transform 0.3s;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .breadcrumb-item a {
+        color: var(--bs-primary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+    
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+    
+    .empty-state {
+        padding: 40px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb" class="mt-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'repository_list' %}"><i class="bi bi-folder2 me-1"></i>我的仓库</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ repository.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- 仓库标题和上传按钮 -->
+    <div class="repo-header">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                        <i class="bi bi-folder2-open fs-3 text-primary"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 fw-bold mb-1">{{ repository.name }}</h1>
+                        <p class="text-muted mb-0">{{ repository.description|default:"暂无描述" }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{% url 'upload_file' repository_id=repository.id %}" class="btn btn-primary">
+                    <i class="bi bi-upload me-1"></i> 上传文件
+                </a>
+                <button class="btn btn-outline-primary ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#repoInfoOffcanvas">
+                    <i class="bi bi-info-circle me-1"></i> 仓库信息
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 仓库统计信息 -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stats-card card bg-primary bg-opacity-10 text-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded p-2 bg-white me-3">
+                            <i class="bi bi-file-earmark-code fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title mb-0">文件数量</h6>
+                            <h2 class="mt-2 mb-0">{{ files.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card card bg-success bg-opacity-10 text-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded p-2 bg-white me-3">
+                            <i class="bi bi-clock-history fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title mb-0">最后更新</h6>
+                            <p class="mt-2 mb-0">{{ repository.updated_at|date:"Y-m-d" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card card bg-info bg-opacity-10 text-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded p-2 bg-white me-3">
+                            <i class="bi bi-calendar-date fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title mb-0">创建时间</h6>
+                            <p class="mt-2 mb-0">{{ repository.created_at|date:"Y-m-d" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card card bg-secondary bg-opacity-10 text-secondary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded p-2 bg-white me-3">
+                            <i class="bi bi-person fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-title mb-0">所有者</h6>
+                            <p class="mt-2 mb-0">{{ repository.owner.username }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件列表 -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-files me-2 text-primary"></i>文件列表</h5>
+                <div class="d-flex">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="搜索文件..." id="fileSearch">
+                        <button class="btn btn-outline-primary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if files %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="fileTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">文件路径</th>
+                            <th>最新版本</th>
+                            <th>更新时间</th>
+                            <th class="text-end pe-4">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        {% with latest_version=file.get_latest_version %}
+                        <tr class="file-row">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="file-icon bg-primary bg-opacity-10">
+                                        <i class="bi bi-file-earmark-code text-primary fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'file_detail' repository_id=repository.id file_id=file.id %}" class="text-decoration-none text-dark fw-medium">
+                                            {{ file.file_path }}
+                                        </a>
+                                        <div class="small text-muted">{{ latest_version.commit_message|default:""|truncatechars:40 }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary py-2 px-3">
+                                    v{{ latest_version.version_number|default:"--" }}
+                                </span>
+                            </td>
+                            <td>{{ file.updated_at|date:"Y-m-d H:i" }}</td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'file_detail' repository_id=repository.id file_id=file.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i> 查看
+                                    </a>
+                                    <a href="{% url 'upload_new_version' repository_id=repository.id file_id=file.id %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-arrow-up-circle me-1"></i> 新版本
+                                    </a>
+                                    {% if latest_version %}
+                                    <a href="{% url 'download_file' version_id=latest_version.id %}" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-download me-1"></i> 下载
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state text-center">
+                <i class="bi bi-file-earmark-x text-primary" style="font-size: 4rem; opacity: 0.7;"></i>
+                <h3 class="mt-4 fw-bold">该仓库还没有任何文件</h3>
+                <p class="text-muted mb-4">上传您的第一个代码文件来开始使用</p>
+                <a href="{% url 'upload_file' repository_id=repository.id %}" class="btn btn-primary">
+                    <i class="bi bi-upload me-2"></i> 上传第一个文件
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 仓库信息侧边栏 -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="repoInfoOffcanvas" aria-labelledby="repoInfoOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="repoInfoOffcanvasLabel">
+            <i class="bi bi-info-circle me-2 text-primary"></i>仓库详细信息
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="mb-4">
+            <h6 class="fw-bold">仓库名称</h6>
+            <p>{{ repository.name }}</p>
+        </div>
+        <div class="mb-4">
+            <h6 class="fw-bold">仓库描述</h6>
+            <p>{{ repository.description|default:"暂无描述" }}</p>
+        </div>
+        <div class="mb-4">
+            <h6 class="fw-bold">创建时间</h6>
+            <p>{{ repository.created_at|date:"Y-m-d H:i:s" }}</p>
+        </div>
+        <div class="mb-4">
+            <h6 class="fw-bold">最后更新</h6>
+            <p>{{ repository.updated_at|date:"Y-m-d H:i:s" }}</p>
+        </div>
+        <div class="mb-4">
+            <h6 class="fw-bold">所有者</h6>
+            <p>{{ repository.owner.username }}</p>
+        </div>
+        <div class="mb-4">
+            <h6 class="fw-bold">文件数量</h6>
+            <p>{{ files.count }}</p>
+        </div>
+        
+        <div class="d-grid gap-2 mt-5">
+            <a href="{% url 'upload_file' repository_id=repository.id %}" class="btn btn-primary">
+                <i class="bi bi-upload me-2"></i>上传文件
+            </a>
+            <button class="btn btn-outline-secondary">
+                <i class="bi bi-pencil me-2"></i>编辑仓库信息
+            </button>
+            <button class="btn btn-outline-danger">
+                <i class="bi bi-trash me-2"></i>删除仓库
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 文件搜索功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('fileSearch');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toUpperCase();
+                const table = document.getElementById('fileTable');
+                if (table) {
+                    const tr = table.getElementsByTagName('tr');
+                    
+                    for (let i = 1; i < tr.length; i++) {
+                        const td = tr[i].getElementsByTagName('td')[0];
+                        if (td) {
+                            const txtValue = td.textContent || td.innerText;
+                            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                tr[i].style.display = '';
+                            } else {
+                                tr[i].style.display = 'none';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 给文件行添加点击事件
+        const fileRows = document.querySelectorAll('.file-row');
+        fileRows.forEach(row => {
+            const link = row.querySelector('a');
+            if (link) {
+                row.style.cursor = 'pointer';
+                row.addEventListener('click', function(e) {
+                    // 如果点击的不是操作按钮，就导航到文件详情页
+                    if (!e.target.closest('.btn-group')) {
+                        window.location.href = link.href;
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %} 
