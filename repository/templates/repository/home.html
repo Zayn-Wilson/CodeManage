@@ -3,6 +3,7 @@
 {% block title %}首页 - 代码仓库管理系统{% endblock %}
 
 {% block extra_css %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <style>
     /* 全局样式与变量 */
     :root {
@@ -10,16 +11,83 @@
         --hover-gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
         --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         --hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        --animation-timing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    /* 页面背景 */
+    body {
+        position: relative;
+        background-color: #111111;
+    }
+    
+    /* 代码彩条背景 */
+    .code-strip-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -2;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    
+    .code-strip {
+        position: absolute;
+        height: 8px;
+        border-radius: 4px;
+        opacity: 0.7;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .code-strip.blue { background-color: #3b82f6; }
+    .code-strip.green { background-color: #10b981; }
+    .code-strip.pink { background-color: #ec4899; }
+    .code-strip.yellow { background-color: #f59e0b; }
+    .code-strip.purple { background-color: #8b5cf6; }
+    .code-strip.cyan { background-color: #06b6d4; }
+    
+    .code-text {
+        position: absolute;
+        bottom: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.8);
+        font-family: monospace;
+        font-size: 3rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+    
+    /* 渐变叠加层 */
+    .gradient-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, rgba(17, 17, 17, 0.7) 0%, rgba(17, 17, 17, 0.9) 100%);
+        z-index: -1;
+        pointer-events: none;
+    }
+    
+    /* 内容区域调整 */
+    .content-container {
+        position: relative;
+        z-index: 1;
+        color: white;
     }
     
     /* 英雄区域 */
     .hero-section {
         position: relative;
-        background: var(--primary-gradient);
+        background: transparent;
         color: white;
-        padding: 80px 0;
+        padding: 100px 0 80px;
         margin-bottom: 0;
         border-radius: 0;
+        overflow: hidden;
     }
     
     .hero-content {
@@ -38,7 +106,7 @@
     
     .hero-shape {
         position: absolute;
-        opacity: 0.1;
+        opacity: 0.15;
         border-radius: 50%;
     }
     
@@ -64,12 +132,17 @@
         font-weight: 800;
         line-height: 1.1;
         margin-bottom: 1.5rem;
+        background: linear-gradient(90deg, #ffffff, #b3d3ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
     
     .hero-lead {
         font-size: 1.2rem;
         font-weight: 400;
         margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.9);
     }
     
     /* 按钮 */
@@ -81,11 +154,51 @@
         border-radius: 50px;
         font-weight: 600;
         transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        position: relative;
+        overflow: hidden;
     }
     
     .btn-apple:hover {
         background: rgba(255, 255, 255, 0.25);
         transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-apple:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn-apple::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.8);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1) translate(-50%, -50%);
+        transform-origin: 50% 50%;
+    }
+    
+    .btn-apple:active::after {
+        opacity: 0.3;
+        animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+        0% {
+            transform: scale(0) translate(-50%, -50%);
+            opacity: 0.5;
+        }
+        100% {
+            transform: scale(20) translate(-50%, -50%);
+            opacity: 0;
+        }
     }
     
     .btn-apple-dark {
@@ -98,55 +211,178 @@
     
     /* 特性卡片 */
     .feature-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.08);
         border-radius: 20px;
         overflow: hidden;
         padding: 20px;
         box-shadow: var(--card-shadow);
         height: 100%;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transform-style: preserve-3d;
+        perspective: 1000px;
     }
     
     .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--hover-shadow);
+        transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+        box-shadow: 
+            0 15px 35px rgba(59, 130, 246, 0.2),
+            0 5px 15px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(59, 130, 246, 0.4),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, 
+            rgba(255, 255, 255, 0) 0%, 
+            rgba(255, 255, 255, 0.05) 50%, 
+            rgba(255, 255, 255, 0) 100%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        z-index: -1;
+    }
+    
+    .feature-card:hover::before {
+        opacity: 1;
+        animation: shine 1.5s infinite;
+    }
+    
+    @keyframes shine {
+        0% {
+            left: -100%;
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.5;
+        }
+        100% {
+            left: 100%;
+            opacity: 0;
+        }
+    }
+    
+    .feature-card h3 {
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover h3 {
+        color: #60a5fa;
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+    
+    .feature-card p {
+        color: rgba(255, 255, 255, 0.7) !important;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover p {
+        color: rgba(255, 255, 255, 0.9) !important;
     }
     
     .icon-circle {
         width: 70px;
         height: 70px;
         border-radius: 50%;
-        background: rgba(59, 130, 246, 0.1);
+        background: rgba(59, 130, 246, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 20px;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        transition: all 0.5s ease;
+    }
+    
+    .feature-card:hover .icon-circle {
+        transform: scale(1.1) translateY(-5px);
+        background: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
     }
     
     .icon-circle i {
         font-size: 2rem;
         color: #3b82f6;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .icon-circle i {
+        color: #60a5fa;
+        transform: scale(1.1);
     }
     
     /* 联系我们区域 */
     .contact-section {
         padding: 60px 0;
-        background-color: #f8fafc;
+        background-color: transparent;
+        position: relative;
     }
     
     .contact-card {
         border-radius: 20px;
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.08);
         padding: 30px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+            0 15px 35px rgba(59, 130, 246, 0.2),
+            0 5px 15px rgba(0, 0, 0, 0.3);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .contact-card label {
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .contact-card .form-control {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-card .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-color: rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        transform: translateY(-2px);
     }
     
     /* 行动号召区 */
     .cta-section {
         padding: 80px 0;
-        background: var(--primary-gradient);
+        background: transparent;
         color: white;
         text-align: center;
+        position: relative;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--primary-gradient);
+        opacity: 0.2;
+        z-index: -1;
     }
     
     .cta-title {
@@ -159,6 +395,45 @@
         font-size: 1.2rem;
         max-width: 800px;
         margin: 0 auto 2rem;
+    }
+    
+    /* 动画效果 */
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    /* 波浪效果 */
+    .wave-container {
+        position: relative;
+        background: transparent;
+        overflow: hidden;
+    }
+    
+    .wave {
+        position: absolute;
+        top: -80px;
+        left: 0;
+        width: 100%;
+        height: 80px; 
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18.17,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="%233b82f6" opacity="0.1"></path></svg>');
+        background-size: 1200px 80px;
+        animation: wave-animation 10s linear infinite;
+    }
+    
+    @keyframes wave-animation {
+        0% { background-position-x: 0; }
+        100% { background-position-x: 1200px; }
+    }
+    
+    /* 背景Section */
+    .bg-light {
+        background-color: transparent !important;
     }
     
     /* 响应式调整 */
@@ -179,162 +454,195 @@
         .cta-title {
             font-size: 2rem;
         }
+        
+        .code-strip {
+            height: 6px;
+        }
+        
+        .code-text {
+            font-size: 2rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- 英雄区域 -->
-<section class="hero-section" id="hero">
-    <div class="hero-background">
-        <div class="hero-shape shape-1"></div>
-        <div class="hero-shape shape-2"></div>
-    </div>
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8 hero-content">
-                <h1 class="hero-title">高效代码管理<br>始于这里</h1>
-                <p class="hero-lead">一站式代码仓库管理平台，让您的开发流程更加流畅。提供先进的代码存储、版本追踪和团队协作功能。</p>
-                <div class="d-flex flex-wrap gap-3">
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'repository_list' %}" class="btn btn-apple">
-                        <i class="bi bi-folder me-2"></i>探索我的仓库
-                    </a>
-                    <a href="{% url 'create_repository' %}" class="btn btn-apple btn-apple-dark">
-                        <i class="bi bi-plus-circle me-2"></i>创建新仓库
-                    </a>
-                    {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-apple">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>立即开始
-                    </a>
-                    <a href="{% url 'register' %}" class="btn btn-apple btn-apple-dark">
-                        <i class="bi bi-person-plus me-2"></i>注册账户
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-lg-4 d-none d-lg-block text-center">
-                <i class="bi bi-code-square text-white" style="font-size: 10rem; opacity: 0.3;"></i>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- 代码彩条背景 -->
+<div class="code-strip-bg" id="codeStripBg">
+    <div class="code-text">{code}</div>
+</div>
 
-<!-- 主要特性区域 -->
-<section class="py-5 bg-light">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold mb-3">创新技术栈</h2>
-            <p class="lead text-muted mb-0">使用最新的技术，构建高效的代码管理系统</p>
+<!-- 渐变叠加层 -->
+<div class="gradient-overlay"></div>
+
+<!-- 内容容器 -->
+<div class="content-container">
+    <!-- 英雄区域 -->
+    <section class="hero-section" id="hero">
+        <div class="hero-background">
+            <div class="hero-shape shape-1" id="shape1"></div>
+            <div class="hero-shape shape-2" id="shape2"></div>
         </div>
-        
-        <div class="row g-4">
-            <div class="col-md-4 mb-4">
-                <div class="feature-card text-center">
-                    <div class="icon-circle">
-                        <i class="bi bi-code-square"></i>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 hero-content">
+                    <h1 class="hero-title" id="heroTitle">高效代码管理<br>始于这里</h1>
+                    <p class="hero-lead" id="heroLead">一站式代码仓库管理平台，让您的开发流程更加流畅。提供先进的代码存储、版本追踪和团队协作功能。</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'repository_list' %}" class="btn btn-apple" id="heroBtn1">
+                            <i class="bi bi-folder me-2"></i>探索我的仓库
+                        </a>
+                        <a href="{% url 'create_repository' %}" class="btn btn-apple btn-apple-dark" id="heroBtn2">
+                            <i class="bi bi-plus-circle me-2"></i>创建新仓库
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-apple" id="heroBtn1">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>立即开始
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-apple btn-apple-dark" id="heroBtn2">
+                            <i class="bi bi-person-plus me-2"></i>注册账户
+                        </a>
+                        {% endif %}
                     </div>
-                    <h3 class="h4 mb-3">现代化前端</h3>
-                    <p class="text-muted">采用最新的前端技术栈，打造流畅、美观的用户界面</p>
                 </div>
+                <div class="col-lg-4 d-none d-lg-block text-center">
+                    <i class="bi bi-code-square text-white floating" style="font-size: 10rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 波浪分隔符 -->
+    <div class="wave-container">
+        <div class="wave"></div>
+    </div>
+
+    <!-- 主要特性区域 -->
+    <section class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="fw-bold mb-3 text-white">创新技术栈</h2>
+                <p class="lead text-white-50 mb-0">使用最新的技术，构建高效的代码管理系统</p>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="feature-card text-center">
-                    <div class="icon-circle">
-                        <i class="bi bi-hdd-stack"></i>
+            <div class="row g-4">
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card text-center">
+                        <div class="icon-circle">
+                            <i class="bi bi-code-square"></i>
+                        </div>
+                        <h3 class="h4 mb-3">现代化前端</h3>
+                        <p class="text-muted">采用最新的前端技术栈，打造流畅、美观的用户界面</p>
                     </div>
-                    <h3 class="h4 mb-3">强大后端</h3>
-                    <p class="text-muted">基于Django框架构建的可靠后端系统，确保数据安全性和系统稳定性</p>
                 </div>
-            </div>
-            
-            <div class="col-md-4 mb-4">
-                <div class="feature-card text-center">
-                    <div class="icon-circle">
-                        <i class="bi bi-layers"></i>
+                
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card text-center">
+                        <div class="icon-circle">
+                            <i class="bi bi-hdd-stack"></i>
+                        </div>
+                        <h3 class="h4 mb-3">强大后端</h3>
+                        <p class="text-muted">基于Django框架构建的可靠后端系统，确保数据安全性和系统稳定性</p>
                     </div>
-                    <h3 class="h4 mb-3">全栈集成</h3>
-                    <p class="text-muted">前后端无缝集成，提供一站式代码管理解决方案</p>
+                </div>
+                
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card text-center">
+                        <div class="icon-circle">
+                            <i class="bi bi-layers"></i>
+                        </div>
+                        <h3 class="h4 mb-3">全栈集成</h3>
+                        <p class="text-muted">前后端无缝集成，提供一站式代码管理解决方案</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- 联系我们区域 -->
-<section class="contact-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <h2 class="fw-bold mb-4">与我们联系</h2>
-                <p class="lead">有任何问题或建议？请随时与我们联系，我们将尽快回复您。</p>
-                <div class="mt-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="me-3 bg-primary bg-opacity-10 p-3 rounded-circle">
-                            <i class="bi bi-envelope-fill text-primary"></i>
+    <!-- 联系我们区域 -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                    <h2 class="fw-bold mb-4 text-white">与我们联系</h2>
+                    <p class="lead text-white-50">有任何问题或建议？请随时与我们联系，我们将尽快回复您。</p>
+                    <div class="mt-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3 bg-primary bg-opacity-10 p-3 rounded-circle">
+                                <i class="bi bi-envelope-fill text-primary"></i>
+                            </div>
+                            <span class="text-white">zhengchaowu17@gmail.com</span>
                         </div>
-                        <span>zhengchaowu17@gmail.com</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="me-3 bg-primary bg-opacity-10 p-3 rounded-circle">
-                            <i class="bi bi-telephone-fill text-primary"></i>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 bg-primary bg-opacity-10 p-3 rounded-circle">
+                                <i class="bi bi-telephone-fill text-primary"></i>
+                            </div>
+                            <span class="text-white">+86 133 3929 4685</span>
                         </div>
-                        <span>+86 133 3929 4685</span>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="contact-card">
-                    <form>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">您的姓名</label>
-                            <input type="text" class="form-control" id="name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">电子邮箱</label>
-                            <input type="email" class="form-control" id="email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">您的留言</label>
-                            <textarea class="form-control" id="message" rows="4"></textarea>
-                        </div>
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                发送消息
-                            </button>
-                        </div>
-                    </form>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="contact-card">
+                        <form>
+                            <div class="mb-3">
+                                <label for="name" class="form-label">您的姓名</label>
+                                <input type="text" class="form-control" id="name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">电子邮箱</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">您的留言</label>
+                                <textarea class="form-control" id="message" rows="4"></textarea>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn">
+                                    发送消息
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- 行动号召区 -->
-<section class="cta-section">
-    <div class="container">
-        <h2 class="cta-title">准备好开始了吗？</h2>
-        <p class="cta-subtitle">加入我们，体验更高效的代码管理方式</p>
-        <div>
-            {% if user.is_authenticated %}
-            <a href="{% url 'repository_list' %}" class="btn btn-light btn-lg">
-                <i class="bi bi-folder me-2"></i>查看我的仓库
-            </a>
-            {% else %}
-            <a href="{% url 'register' %}" class="btn btn-light btn-lg">
-                <i class="bi bi-person-plus me-2"></i>立即注册
-            </a>
-            {% endif %}
+    <!-- 行动号召区 -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title" data-aos="fade-up">准备好开始了吗？</h2>
+            <p class="cta-subtitle" data-aos="fade-up" data-aos-delay="100">加入我们，体验更高效的代码管理方式</p>
+            <div data-aos="fade-up" data-aos-delay="200">
+                {% if user.is_authenticated %}
+                <a href="{% url 'repository_list' %}" class="btn btn-light btn-lg">
+                    <i class="bi bi-folder me-2"></i>查看我的仓库
+                </a>
+                {% else %}
+                <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>立即注册
+                </a>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log('页面已完全加载');
+        
+        // 初始化AOS动画库
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
         
         // 隐藏备用内容
         const contentFallback = document.querySelector('.content-fallback');
@@ -342,19 +650,274 @@
             contentFallback.style.display = 'none';
         }
         
-        // 添加简单的卡片悬停效果
-        const featureCards = document.querySelectorAll('.feature-card');
-        featureCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px)';
-                this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
+        // 卡片3D悬停效果
+        const cards = document.querySelectorAll('.feature-card, .contact-card');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x 在元素内的位置
+                const y = e.clientY - rect.top; // y 在元素内的位置
+                
+                // 计算旋转角度，根据鼠标位置调整
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 20; // 调整除数可以改变倾斜程度
+                const rotateY = (centerX - x) / 20;
+                
+                // 应用旋转和阴影效果
+                gsap.to(this, {
+                    duration: 0.5,
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    boxShadow: `
+                        ${(x - centerX) / 15}px ${(y - centerY) / 15}px 30px rgba(59, 130, 246, 0.3),
+                        0 10px 20px rgba(0, 0, 0, 0.2)
+                    `,
+                    ease: 'power2.out'
+                });
+                
+                // 为图标添加跟随效果
+                const icon = this.querySelector('.icon-circle');
+                if (icon) {
+                    gsap.to(icon, {
+                        duration: 0.5,
+                        x: (x - centerX) / 15,
+                        y: (y - centerY) / 15,
+                        ease: 'power2.out'
+                    });
+                }
             });
             
+            // 鼠标离开时恢复原状
             card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
+                gsap.to(this, {
+                    duration: 0.7,
+                    rotateX: 0,
+                    rotateY: 0,
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
+                    ease: 'elastic.out(1, 0.5)'
+                });
+                
+                // 图标恢复原位
+                const icon = this.querySelector('.icon-circle');
+                if (icon) {
+                    gsap.to(icon, {
+                        duration: 0.7,
+                        x: 0,
+                        y: 0,
+                        ease: 'elastic.out(1, 0.5)'
+                    });
+                }
             });
         });
+        
+        // 为按钮添加点击动效
+        const buttons = document.querySelectorAll('.btn-apple, .btn-primary, button[type="submit"]');
+        buttons.forEach(button => {
+            button.addEventListener('mousedown', function() {
+                gsap.to(this, {
+                    duration: 0.1,
+                    scale: 0.95,
+                    ease: 'power2.out'
+                });
+                
+                // 创建点击波纹效果
+                const ripple = document.createElement('span');
+                ripple.className = 'btn-ripple';
+                ripple.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) scale(0);
+                    width: 200px;
+                    height: 200px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    opacity: 0.6;
+                    z-index: -1;
+                `;
+                
+                // 确保按钮有相对定位
+                if (getComputedStyle(this).position === 'static') {
+                    this.style.position = 'relative';
+                }
+                
+                this.appendChild(ripple);
+                
+                // 播放波纹动画
+                gsap.to(ripple, {
+                    duration: 0.6,
+                    scale: 1,
+                    opacity: 0,
+                    onComplete: function() {
+                        ripple.remove();
+                    }
+                });
+            });
+            
+            button.addEventListener('mouseup', function() {
+                gsap.to(this, {
+                    duration: 0.5,
+                    scale: 1,
+                    ease: 'elastic.out(1, 0.5)'
+                });
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                gsap.to(this, {
+                    duration: 0.5,
+                    scale: 1,
+                    ease: 'elastic.out(1, 0.5)'
+                });
+            });
+        });
+        
+        // 创建代码彩条背景
+        const createCodeStrips = () => {
+            const container = document.getElementById('codeStripBg');
+            if (!container) return;
+            
+            // 清空容器
+            container.innerHTML = '<div class="code-text">{code}</div>';
+            
+            // 颜色列表
+            const colors = ['blue', 'green', 'pink', 'yellow', 'purple', 'cyan'];
+            
+            // 创建30个彩条
+            for (let i = 0; i < 30; i++) {
+                const strip = document.createElement('div');
+                strip.className = `code-strip ${colors[Math.floor(Math.random() * colors.length)]}`;
+                
+                // 随机位置和宽度
+                const width = Math.random() * 15 + 5; // 5-20% 宽度
+                const left = Math.random() * 80; // 0-80% 左侧位置
+                const top = Math.random() * 90; // 0-90% 顶部位置
+                
+                strip.style.width = `${width}%`;
+                strip.style.left = `${left}%`;
+                strip.style.top = `${top}%`;
+                
+                // 添加到容器
+                container.appendChild(strip);
+            }
+        };
+        
+        // 创建彩条背景
+        createCodeStrips();
+        
+        // 窗口尺寸变化时重新创建
+        window.addEventListener('resize', () => {
+            createCodeStrips();
+        });
+        
+        // GSAP动画
+        // 英雄区域动画
+        const heroTl = gsap.timeline();
+        heroTl.from("#heroTitle", {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            ease: "power3.out"
+        })
+        .from("#heroLead", {
+            opacity: 0,
+            y: 20,
+            duration: 0.6,
+            ease: "power3.out"
+        }, "-=0.4")
+        .from("#heroBtn1, #heroBtn2", {
+            opacity: 0,
+            y: 20,
+            stagger: 0.2,
+            duration: 0.6,
+            ease: "power3.out"
+        }, "-=0.3");
+        
+        // 形状动画
+        gsap.to("#shape1", {
+            rotation: 360,
+            duration: 60,
+            repeat: -1,
+            ease: "none"
+        });
+        
+        gsap.to("#shape2", {
+            rotation: -360,
+            duration: 50,
+            repeat: -1,
+            ease: "none"
+        });
+        
+        // 代码条动画
+        const codeStrips = document.querySelectorAll('.code-strip');
+        codeStrips.forEach(strip => {
+            // 随机动画参数
+            const duration = Math.random() * 15 + 15; // 15-30秒
+            const xMove = Math.random() * 10 - 5; // -5到5%的X轴移动
+            
+            gsap.to(strip, {
+                x: `${xMove}%`,
+                opacity: Math.random() * 0.5 + 0.3, // 0.3-0.8的透明度
+                duration: duration,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        });
+        
+        // 代码文本动画
+        gsap.to('.code-text', {
+            opacity: 0.6,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+        
+        // 提交按钮悬停效果
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('mouseenter', function() {
+                gsap.to(this, {
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+            
+            submitBtn.addEventListener('mouseleave', function() {
+                gsap.to(this, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        }
+        
+        // 添加滚动指示器
+        const addScrollIndicator = () => {
+            const indicator = document.createElement('div');
+            indicator.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+                z-index: 9999;
+                width: 0%;
+            `;
+            document.body.appendChild(indicator);
+            
+            window.addEventListener('scroll', () => {
+                const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+                indicator.style.width = `${scrollPercent}%`;
+            });
+        };
+        
+        // 添加滚动指示器
+        addScrollIndicator();
     });
 </script>
 {% endblock %} 
